@@ -1,40 +1,65 @@
-// Función que determina el número mayor entre tres números
-function cualEsMayor(num1, num2, num3) {
-    return Math.max(num1, num2, num3);
-}
+// Palabras para el juego (puedes agregar más palabras)
+const words = ["apple", "banana", "cherry", "grape", "lemon"];
 
-// Agregar la función al objeto global (window) para que pueda ser utilizada en la consola
-window.cualEsMayor = cualEsMayor;
+// Palabra secreta aleatoria
+const secretWord = words[Math.floor(Math.random() * words.length)];
 
-// Controlador de eventos de carga del documento
-document.addEventListener("DOMContentLoaded", function() {
-    // Obtener elementos HTML después de que se haya cargado el documento
-    var num1Input = document.getElementById("num1");
-    var num2Input = document.getElementById("num2");
-    var num3Input = document.getElementById("num3");
-    var resultadoParrafo = document.getElementById("resultado");
-    var calcularButton = document.getElementById("calcular");
+// Intentos restantes
+let attempts = 6;
 
-    // Verificar si los elementos existen antes de agregar eventos
-    if (num1Input && num2Input && num3Input && resultadoParrafo && calcularButton) {
-        // Esta función se llama cuando se hace clic en el botón "Calcular Mayor"
-        calcularButton.addEventListener("click", function() {
-            // Obtener los valores ingresados por el usuario
-            var num1 = parseFloat(num1Input.value);
-            var num2 = parseFloat(num2Input.value);
-            var num3 = parseFloat(num3Input.value);
+// Letras usadas
+const usedLetters = [];
 
-            // Validar que se ingresaron números válidos
-            if (isNaN(num1) || isNaN(num2) || isNaN(num3)) {
-                alert("Por favor, ingresa tres números válidos.");
-                return;
+// Elementos del DOM
+const attemptsElement = document.getElementById("attempts");
+const secretWordElement = document.getElementById("secret-word");
+const guessElement = document.getElementById("guess");
+const feedbackElement = document.getElementById("feedback");
+const usedLettersElement = document.getElementById("used-letters");
+
+// Inicializar la palabra secreta en el DOM
+secretWordElement.textContent = secretWord;
+
+function checkGuess() {
+    const guess = guessElement.value.toLowerCase();
+    
+    // Verificar si la adivinanza es correcta
+    if (guess === secretWord) {
+        feedbackElement.textContent = "¡Ganaste!";
+        feedbackElement.classList.add("correct");
+        guessElement.disabled = true;
+    } else {
+        // Comparar cada letra en la adivinanza
+        let feedback = "";
+        for (let i = 0; i < secretWord.length; i++) {
+            const letter = secretWord[i];
+            if (guess.includes(letter)) {
+                if (guess[i] === letter) {
+                    feedback += `<span class="correct">${letter}</span>`;
+                } else {
+                    feedback += `<span class="incorrect-position">${letter}</span>`;
+                }
+            } else {
+                feedback += `<span class="incorrect">${guess[i]}</span>`;
             }
+        }
 
-            // Llamar a la función para determinar el número mayor
-            var mayor = cualEsMayor(num1, num2, num3);
-
-            // Mostrar el resultado en el párrafo
-            resultadoParrafo.textContent = "El número más grande es: " + mayor;
-        });
+        // Mostrar el feedback
+        feedbackElement.innerHTML = feedback;
     }
-});
+
+    // Actualizar letras usadas
+    usedLetters.push(guess);
+    usedLettersElement.textContent = `Letras usadas: ${usedLetters.join(", ")}`;
+
+    // Reducir los intentos restantes
+    attempts--;
+    attemptsElement.textContent = attempts;
+
+    // Verificar si se agotaron los intentos
+    if (attempts === 0) {
+        feedbackElement.textContent = `¡Perdiste! La palabra secreta era "${secretWord}".`;
+        feedbackElement.classList.add("incorrect");
+        guessElement.disabled = true;
+    }
+}
