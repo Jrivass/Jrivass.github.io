@@ -1,65 +1,85 @@
-// Palabras para el juego (puedes agregar más palabras)
-const words = ["apple", "banana", "cherry", "grape", "lemon"];
+let palabraSecreta; // Variable para almacenar la palabra secreta
+let intentos = 6;
 
-// Palabra secreta aleatoria
-const secretWord = words[Math.floor(Math.random() * words.length)];
+// Función para obtener una palabra aleatoria de la API
+async function obtenerPalabraAleatoria() {
+    try {
+        const response = await fetch("https://random-word-api.herokuapp.com/word?number=1");
+        const data = await response.json();
+        palabraSecreta = data[0].toLowerCase(); // Almacenar la palabra secreta en minúsculas
+        console.log("Palabra secreta:", palabraSecreta);
 
-// Intentos restantes
-let attempts = 6;
+        // Mostrar una pista sobre la palabra
+        const hint = document.getElementById("hint");
+        hint.textContent = `Pista: La palabra tiene ${palabraSecreta.length} letras.`;
 
-// Letras usadas
-const usedLetters = [];
-
-// Elementos del DOM
-const attemptsElement = document.getElementById("attempts");
-const secretWordElement = document.getElementById("secret-word");
-const guessElement = document.getElementById("guess");
-const feedbackElement = document.getElementById("feedback");
-const usedLettersElement = document.getElementById("used-letters");
-
-// Inicializar la palabra secreta en el DOM
-secretWordElement.textContent = secretWord;
-
-function checkGuess() {
-    const guess = guessElement.value.toLowerCase();
-    
-    // Verificar si la adivinanza es correcta
-    if (guess === secretWord) {
-        feedbackElement.textContent = "¡Ganaste!";
-        feedbackElement.classList.add("correct");
-        guessElement.disabled = true;
-    } else {
-        // Comparar cada letra en la adivinanza
-        let feedback = "";
-        for (let i = 0; i < secretWord.length; i++) {
-            const letter = secretWord[i];
-            if (guess.includes(letter)) {
-                if (guess[i] === letter) {
-                    feedback += `<span class="correct">${letter}</span>`;
-                } else {
-                    feedback += `<span class="incorrect-position">${letter}</span>`;
-                }
-            } else {
-                feedback += `<span class="incorrect">${guess[i]}</span>`;
-            }
-        }
-
-        // Mostrar el feedback
-        feedbackElement.innerHTML = feedback;
-    }
-
-    // Actualizar letras usadas
-    usedLetters.push(guess);
-    usedLettersElement.textContent = `Letras usadas: ${usedLetters.join(", ")}`;
-
-    // Reducir los intentos restantes
-    attempts--;
-    attemptsElement.textContent = attempts;
-
-    // Verificar si se agotaron los intentos
-    if (attempts === 0) {
-        feedbackElement.textContent = `¡Perdiste! La palabra secreta era "${secretWord}".`;
-        feedbackElement.classList.add("incorrect");
-        guessElement.disabled = true;
+        // Inicializar el juego con la palabra secreta
+        initGame();
+    } catch (error) {
+        console.error("Error al obtener la palabra:", error);
     }
 }
+
+// Llamar a la función para obtener la palabra al cargar la página
+obtenerPalabraAleatoria();
+
+function initGame() {
+    const guessButton = document.getElementById("guess-button");
+    guessButton.addEventListener("click", checkGuess);
+}
+
+function leerIntento() {
+    return document.getElementById("guess-input").value.toLowerCase();
+}
+
+function checkGuess() {
+    const INTENTO = leerIntento();
+
+    if (INTENTO === palabraSecreta) {
+        terminar("<h1>¡GANASTE!😀</h1>");
+        return;
+    }
+
+    if (intentos === 0) {
+        terminar("<h1>¡PERDISTE!😖</h1>");
+        return;
+    }
+
+    const feedbackElement = document.getElementById("feedback");
+
+    for (let i in palabraSecreta) {
+        const SPAN = document.createElement('span');
+        SPAN.className = 'letter';
+
+        if (INTENTO[i] === palabraSecreta[i]) { //VERDE
+            SPAN.innerHTML = INTENTO[i];
+            SPAN.style.backgroundColor = '#79b851'; // Verde
+        } else if (palabraSecreta.includes(INTENTO[i])) { //AMARILLO
+            SPAN.innerHTML = INTENTO[i];
+            SPAN.style.backgroundColor = '#f3c237'; // Amarillo
+        } else { //GRIS
+            SPAN.innerHTML = INTENTO[i];
+            SPAN.style.backgroundColor = '#a4aec4'; // Gris
+        }
+
+        feedbackElement.appendChild(SPAN);
+    }
+
+    intentos--;
+
+    if (intentos === 0) {
+        terminar("<h1>¡PERDISTE!😖</h1>");
+    }
+}
+
+function terminar(mensaje) {
+    const INPUT = document.getElementById("guess-input");
+    const BOTON = document.getElementById("guess-button");
+
+    INPUT.disabled = true;
+    BOTON.disabled = true;
+
+    let contenedor = document.getElementById('guesses');
+    contenedor.innerHTML = mensaje;
+}
+
