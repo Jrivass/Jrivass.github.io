@@ -1,85 +1,77 @@
-let palabraSecreta; // Variable para almacenar la palabra secreta
-let intentos = 6;
+// Vector de palabras aleatorias de 5 letras
+const palabras = ["TIGER", "LEMON", "MANGO", "GRAPE", "APPLE", "SNAKE", "BREAD", "PAPER"];
 
-// Función para obtener una palabra aleatoria de la API
-async function obtenerPalabraAleatoria() {
-    try {
-        const response = await fetch("https://random-word-api.herokuapp.com/word?number=1");
-        const data = await response.json();
-        palabraSecreta = data[0].toLowerCase(); // Almacenar la palabra secreta en minúsculas
-        console.log("Palabra secreta:", palabraSecreta);
+// Palabra aleatoria para adivinar
+let palabra = palabras[Math.floor(Math.random() * palabras.length)];
 
-        // Mostrar una pista sobre la palabra
-        const hint = document.getElementById("hint");
-        hint.textContent = `Pista: La palabra tiene ${palabraSecreta.length} letras.`;
+let intentosRestantes = 6;
+let letrasUsadas = [];
 
-        // Inicializar el juego con la palabra secreta
-        initGame();
-    } catch (error) {
-        console.error("Error al obtener la palabra:", error);
+document.addEventListener('DOMContentLoaded', function() {
+    mostrarPalabra();
+});
+
+function mostrarPalabra(){
+    const wordDisplay = document.getElementById("word-display");
+    wordDisplay.textContent = palabra;
+}
+
+function intentar(){
+    const intento = leerIntento();
+    letrasUsadas.push(intento);
+    const resultado = compararPalabra(intento);
+    mostrarResultado(resultado);
+    actualizarIntentosRestantes();
+    
+    if (intentosRestantes === 0) {
+        terminarJuego("PERDISTE");
     }
 }
 
-// Llamar a la función para obtener la palabra al cargar la página
-obtenerPalabraAleatoria();
-
-function initGame() {
-    const guessButton = document.getElementById("guess-button");
-    guessButton.addEventListener("click", checkGuess);
+function leerIntento(){
+    const intento = document.getElementById("guess-input").value.toUpperCase();
+    return intento;
 }
 
-function leerIntento() {
-    return document.getElementById("guess-input").value.toLowerCase();
-}
-
-function checkGuess() {
-    const INTENTO = leerIntento();
-
-    if (INTENTO === palabraSecreta) {
-        terminar("<h1>¡GANASTE!😀</h1>");
-        return;
-    }
-
-    if (intentos === 0) {
-        terminar("<h1>¡PERDISTE!😖</h1>");
-        return;
-    }
-
-    const feedbackElement = document.getElementById("feedback");
-
-    for (let i in palabraSecreta) {
-        const SPAN = document.createElement('span');
-        SPAN.className = 'letter';
-
-        if (INTENTO[i] === palabraSecreta[i]) { //VERDE
-            SPAN.innerHTML = INTENTO[i];
-            SPAN.style.backgroundColor = '#79b851'; // Verde
-        } else if (palabraSecreta.includes(INTENTO[i])) { //AMARILLO
-            SPAN.innerHTML = INTENTO[i];
-            SPAN.style.backgroundColor = '#f3c237'; // Amarillo
-        } else { //GRIS
-            SPAN.innerHTML = INTENTO[i];
-            SPAN.style.backgroundColor = '#a4aec4'; // Gris
+function compararPalabra(intento){
+    if (intento === palabra) {
+        return "GANASTE";
+    } else {
+        let resultado = "";
+        for (let i = 0; i < palabra.length; i++) {
+            if (intento[i] === palabra[i]) {
+                resultado += "VERDE";
+            } else if (palabra.includes(intento[i])) {
+                resultado += "AMARILLO";
+            } else {
+                resultado += "GRIS";
+            }
         }
-
-        feedbackElement.appendChild(SPAN);
-    }
-
-    intentos--;
-
-    if (intentos === 0) {
-        terminar("<h1>¡PERDISTE!😖</h1>");
+        return resultado;
     }
 }
 
-function terminar(mensaje) {
-    const INPUT = document.getElementById("guess-input");
-    const BOTON = document.getElementById("guess-button");
+function mostrarResultado(resultado){
+    const grid = document.getElementById("word-display");
+    const letras = grid.getElementsByClassName("letter");
+    for (let i = 0; i < resultado.length; i++) {
+        letras[i].textContent = resultado[i];
+        letras[i].classList.add(resultado[i].toLowerCase());
+    }
+}
 
-    INPUT.disabled = true;
-    BOTON.disabled = true;
+function actualizarIntentosRestantes(){
+    intentosRestantes--;
+    const guesses = document.getElementById("guesses");
+    guesses.textContent = `Attempts left: ${intentosRestantes}`;
+}
 
-    let contenedor = document.getElementById('guesses');
-    contenedor.innerHTML = mensaje;
+function terminarJuego(mensaje){
+    const input = document.getElementById("guess-input");
+    const button = document.getElementById("guess-button");
+    input.disabled = true;
+    button.disabled = true;
+    const guesses = document.getElementById("guesses");
+    guesses.textContent = mensaje;
 }
 
