@@ -1,15 +1,19 @@
- <!DOCTYPE html>
- <html>
-   <head>
-     <title>Wordle PPY</title>
- 		<link rel="stylesheet" href="style.css">
-     <script src="script.js" defer></script>
-   </head>
-   <body>
-     <h1>Wordle PPY</h1>
-     <input type="text" id="guess-input">
-     <button id="guess-button">Intentar</button>
-     <div id="grid"></div>
-     <p id="guesses">
-   </body>
- </html>
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Wordle Game</title>
+    <link rel="stylesheet" href="style.css">
+</head>
+<body>
+    <h1>Wordle Game</h1>
+    <div class="input-area">
+        <input type="text" id="guess-input" maxlength="5">
+        <button id="guess-button">Guess</button>
+    </div>
+    <p id="guesses">Attempts left: 6</p>
+    <div id="word-display"></div>
+    <script src="script.js"></script>
+</body>
+</html>
