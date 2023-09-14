@@ -1,30 +1,16 @@
 <!DOCTYPE html>
 <html>
 <head>
-    <title>Juego de Adivinanza de Palabras</title>
+    <title>Wordle PPY</title>
     <link rel="stylesheet" type="text/css" href="styles.css">
 </head>
 <body>
     <div id="game-container">
-        <h1>Juego de Adivinanza de Palabras</h1>
-        <div class="input-area">
-            <input type="text" id="guess-input" maxlength="5" placeholder="Adivina la palabra">
-            <button id="guess-button" onclick="checkGuess()">Adivinar</button>
-        </div>
-        <div class="row">
-            <p>Intentos restantes: <span id="attempts">6</span></p>
-        </div>
-        <div class="row">
-            <p>Palabra secreta: <span id="secret-word"></span></p>
-        </div>
-        <div class="row">
-            <div id="feedback"></div>
-        </div>
-        <div class="row">
-            <div id="used-letters"></div>
-        </div>
+        <h1>Wordle PPY</h1>
+        <input type="text" id="guess-input">
+        <button id="guess-button">Intentar</button>
+        <p id="guesses"></p>
+        <div id="grid"></div>
     </div>
-
-    <script src="script.js"></script>
 </body>
 </html>
