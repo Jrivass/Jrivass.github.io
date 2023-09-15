@@ -1,19 +1,20 @@
 <!DOCTYPE html>
-<html lang="en">
+<html>
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Wordle Game</title>
-    <link rel="stylesheet" href="style.css">
+  <title>Wordle PPY</title>
+  <meta charset="UTF-8">
+  <link rel="stylesheet" href="style.css">
+  <script src="script.js" defer></script>
 </head>
 <body>
-    <h1>Wordle Game</h1>
-    <div class="input-area">
-        <input type="text" id="guess-input" maxlength="5">
-        <button id="guess-button">Guess</button>
-    </div>
-    <p id="guesses">Attempts left: 6</p>
-    <div id="word-display"></div>
-    <script src="script.js"></script>
+  <h1>Wordle PPY</h1>
+  <input type="text" id="guess-input" maxlength="5">
+  <button id="guess-button">Intentar</button>
+  <div id="grid"></div>
+  <p id="guesses"></p>
+  <!-- Emoji en el HTML -->
+  <div id="emoji-div"></div>
+  <!-- Botón de reinicio (oculto al principio) -->
+  <button id="reset-button" onclick="reiniciar()" style="display: none;">Reiniciar</button>
 </body>
 </html>
